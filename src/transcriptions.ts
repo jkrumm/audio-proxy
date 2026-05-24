@@ -1,4 +1,5 @@
 import { unlink } from "node:fs/promises";
+import { config } from "./config";
 import { iuHeaders, iuUrl } from "./iu";
 import { recordUsage } from "./usage";
 
@@ -85,6 +86,11 @@ export async function handleTranscriptions(req: Request): Promise<Response> {
   }
   upstream.append("response_format", synth ? "json" : clientFormat);
 
+  // Inject language steering when the client provided none. `language` is a hard
+  // single-language lock; `prompt` is a softer bias (use it for "de or en").
+  if (!form.has("language") && config.sttLanguage) upstream.append("language", config.sttLanguage);
+  if (!form.has("prompt") && config.sttPrompt) upstream.append("prompt", config.sttPrompt);
+
   const start = Date.now();
   const res = await fetch(iuUrl("/audio/transcriptions"), {
     method: "POST",
@@ -102,7 +108,7 @@ export async function handleTranscriptions(req: Request): Promise<Response> {
 
   let text = body;
   let usage: unknown = null;
-  let detectedLang = language;
+  let detectedLang = language ?? (config.sttLanguage || null);
   if (contentType.includes("application/json")) {
     const json = JSON.parse(body) as Record<string, unknown>;
     text = typeof json["text"] === "string" ? json["text"] : "";

@@ -38,6 +38,24 @@ base-URL form work.
 > does not emit word/segment timestamps, so accurate subtitles require `Whisper`.
 > This proxy is aimed at getting the best transcript **text** into such clients.
 
+### Language steering
+
+Without a language hint, `gpt-4o-transcribe` guesses the language and can drift
+into the wrong one (Chinese/Dutch) on short or quiet clips. Two env knobs are
+injected into the upstream call **only when the client sends none** (client
+values always win):
+
+- `STT_LANGUAGE` — hard lock to one language (ISO-639-1, e.g. `de`). Most
+  reliable, but wrong-language audio is forced into it. Leave empty to allow more
+  than one language.
+- `STT_PROMPT` — a soft text bias. Ships defaulting to
+  `Die Aufnahme ist auf Deutsch oder Englisch.`, which keeps the model on German
+  **or** English without locking to one. This is OpenAI's recommended approach
+  for the multi-language case.
+
+Pick `STT_LANGUAGE` when every recording is the same language; keep the
+`STT_PROMPT` default when you mix German and English.
+
 ## Setup
 
 Requires [Bun](https://bun.sh) and (optionally) `ffmpeg`/`ffprobe` for STT clip

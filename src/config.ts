@@ -11,4 +11,8 @@ export const config = {
   usageDb: process.env["USAGE_DB"] ?? "./data/usage.db",
   /** When set, callers must send `Authorization: Bearer <proxyApiKey>`. */
   proxyApiKey: process.env["PROXY_API_KEY"] ?? "",
+  /** Default STT `language` (ISO-639-1, e.g. `de`) injected when the client sends none. */
+  sttLanguage: process.env["STT_LANGUAGE"] ?? "",
+  /** Default STT `prompt` injected when the client sends none — steers expected language. */
+  sttPrompt: process.env["STT_PROMPT"] ?? "",
 } as const;
