@@ -58,14 +58,33 @@ Pick `STT_LANGUAGE` when every recording is the same language; keep the
 
 ## Setup
 
-Requires [Bun](https://bun.sh) and (optionally) `ffmpeg`/`ffprobe` for STT clip
-duration.
+Requires [Bun](https://bun.sh), the `op` CLI (1Password), and optionally
+`ffmpeg`/`ffprobe` for STT clip duration.
+
+Secrets are never stored in plaintext. `.env.tpl` holds only `op://` references
+and is resolved at runtime — there is no committed or local `.env`.
+
+### Dev
 
 ```bash
-cp .env.example .env   # fill IU_OPENAI_BASE_URL + IU_API_KEY (see your secret manager)
 bun install
-bun run dev            # http://localhost:7716
+bun run dev   # op run --env-file=.env.tpl -- bun --watch src/index.ts → http://localhost:7716
 ```
+
+### Run as a service (macOS LaunchAgent)
+
+```bash
+bun run install-agent   # render + load com.jkrumm.audio-proxy, RunAtLoad + KeepAlive
+```
+
+This is also wired into dotfiles `make setup` (`_setup-audio-proxy`), so a full
+machine setup installs it automatically. Logs: `/tmp/audio-proxy.log` /
+`/tmp/audio-proxy.err`.
+
+The LaunchAgent **cannot** use `op` (launchd has no 1Password session), so
+`launchd/start-audio-proxy.sh` reads the IU credential from the macOS Keychain
+(`claude-sdk-api-key` / `claude-sdk-base-url`, cached by dotfiles `make setup`)
+and derives the OpenAI base from it. Nothing is written to disk.
 
 ### Config
 
@@ -76,9 +95,6 @@ bun run dev            # http://localhost:7716
 | `IU_API_KEY` | — | Upstream bearer token |
 | `USAGE_DB` | `./data/usage.db` | SQLite usage log path |
 | `PROXY_API_KEY` | _(empty)_ | If set, callers must send `Authorization: Bearer <it>`. Empty = accept any caller (localhost only). |
-
-Secrets are never committed — `.env` is git-ignored and `.env.example` ships
-placeholders only.
 
 ## MacWhisper
 

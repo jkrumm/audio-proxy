@@ -5,8 +5,9 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "npx kill-port 7716 && bun --watch src/index.ts",
-    "start": "bun src/index.ts",
+    "dev": "npx kill-port 7716 && op run --account tkrumm --env-file=.env.tpl -- bun --watch src/index.ts",
+    "start": "op run --account tkrumm --env-file=.env.tpl -- bun src/index.ts",
+    "install-agent": "bash launchd/install-agent.sh",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
