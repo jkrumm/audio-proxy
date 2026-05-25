@@ -8,7 +8,8 @@
     "dev": "npx kill-port 7716 && op run --account tkrumm --env-file=.env.tpl -- bun --watch src/index.ts",
     "start": "op run --account tkrumm --env-file=.env.tpl -- bun src/index.ts",
     "install-agent": "bash launchd/install-agent.sh",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
   },
   "devDependencies": {
     "@types/bun": "latest",

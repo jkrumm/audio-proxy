@@ -11,7 +11,7 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS usage_record (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     ts              TEXT    NOT NULL,
-    endpoint        TEXT    NOT NULL,          -- 'transcriptions' | 'speech' | 'models'
+    endpoint        TEXT    NOT NULL,          -- 'transcriptions' | 'speech' | 'speech-prep' | 'models'
     model           TEXT    NOT NULL,
     status          INTEGER NOT NULL,          -- upstream HTTP status
     latency_ms      INTEGER NOT NULL,
@@ -28,7 +28,7 @@ db.exec(`
 db.exec("CREATE INDEX IF NOT EXISTS idx_usage_ts ON usage_record (ts);");
 
 export interface UsageRow {
-  endpoint: "transcriptions" | "speech" | "models";
+  endpoint: "transcriptions" | "speech" | "speech-prep" | "models";
   model: string;
   status: number;
   latencyMs: number;

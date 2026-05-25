@@ -12,8 +12,22 @@ PORT=7716
 IU_OPENAI_BASE_URL=op://common/anthropic/OPENAI_BASE_URL
 IU_API_KEY=op://common/anthropic/API_KEY
 
+# IU Gemini native endpoint (generateContent) for expressive TTS. Optional —
+# only Gemini TTS requests need it; STT-only use boots without it.
+IU_GEMINI_BASE_URL=op://common/anthropic/GEMINI_BASE_URL
+
 # Local SQLite usage log.
 USAGE_DB=./data/usage.db
+
+# Gemini TTS tuning (all optional — code defaults shown).
+# TTS_PREP_MODEL: OpenAI-dialect model that rewrites text into Hermes-styled chunks.
+# TTS_MP3_BITRATE: output MP3 bitrate in kbps.
+# TTS_CHUNK_THRESHOLD: below this input length, prep short-circuits to one chunk.
+# TTS_PREP: always | long | off (prep behaviour — see config.ts).
+TTS_PREP_MODEL=gpt-5.4-mini
+TTS_MP3_BITRATE=64
+TTS_CHUNK_THRESHOLD=1200
+TTS_PREP=always
 
 # Optional: require this bearer token from clients (empty = accept any, localhost only).
 PROXY_API_KEY=

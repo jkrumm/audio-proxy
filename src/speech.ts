@@ -1,17 +1,35 @@
+import { handleGeminiSpeech } from "./gemini-tts";
 import { iuHeaders, iuUrl } from "./iu";
 import { recordUsage } from "./usage";
 
-/** TTS: straight proxy of OpenAI's `/audio/speech`, returns the audio stream. */
+/** Models served by the native Gemini `generateContent` route, not OpenAI `/audio/speech`. */
+const GEMINI_TTS = /gemini.*tts/i;
+
+/**
+ * TTS dispatcher. Gemini TTS models route to the native synth pipeline
+ * (`gemini-tts.ts`); everything else is a straight proxy of OpenAI's
+ * `/audio/speech`, returning the audio stream unchanged.
+ */
 export async function handleSpeech(req: Request): Promise<Response> {
   const body = await req.text();
   let model = "";
   let inputChars = 0;
+  let input = "";
+  let voice = "";
+  let responseFormat = "";
   try {
     const json = JSON.parse(body) as Record<string, unknown>;
     model = typeof json["model"] === "string" ? json["model"] : "";
-    inputChars = typeof json["input"] === "string" ? json["input"].length : 0;
+    input = typeof json["input"] === "string" ? json["input"] : "";
+    inputChars = input.length;
+    voice = typeof json["voice"] === "string" ? json["voice"] : "";
+    responseFormat = typeof json["response_format"] === "string" ? json["response_format"] : "";
   } catch {
     // non-JSON body: forward as-is, log what we can
+  }
+
+  if (GEMINI_TTS.test(model)) {
+    return handleGeminiSpeech({ model, input, voice, responseFormat });
   }
 
   const start = Date.now();

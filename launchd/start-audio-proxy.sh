@@ -29,10 +29,13 @@ if [ -z "$KEY" ] || [ -z "$BASE" ]; then
 fi
 
 # claude-sdk-base-url is the IU Anthropic transport (…/anthropic). Derive the
-# OpenAI-compatible transport this proxy forwards to.
+# OpenAI-compatible transport this proxy forwards to, plus the native Gemini
+# (generateContent) transport used for expressive TTS.
 export IU_API_KEY="$KEY"
 export IU_OPENAI_BASE_URL="${BASE%/anthropic}/openai/v1"
+export IU_GEMINI_BASE_URL="${BASE%/anthropic}/gemini/v1beta"
 export PORT="${PORT:-7716}"
+# Absolute path — launchd's cwd is not the repo until the cd below.
 export USAGE_DB="${USAGE_DB:-$REPO/data/usage.db}"
 export STT_LANGUAGE="${STT_LANGUAGE:-}"
 export STT_PROMPT="${STT_PROMPT:-Die Aufnahme ist auf Deutsch oder Englisch.}"
